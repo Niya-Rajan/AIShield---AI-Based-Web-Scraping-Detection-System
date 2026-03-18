@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inside a Black Hole: What Physics Tells Us — Cosmos Chronicle</title>
+  <meta name="description" content="General relativity and quantum mechanics collide at the event horizon. We explore what the latest theoretical models reveal." />
+
+  <!-- ✅ FIXED -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <!-- ✅ FIXED -->
+    <a class="nav-logo" href="{{ url_for('home') }}">✦ Cosmos <span>Chronicle</span></a>
+    <ul class="nav-links">
+      <!-- ✅ FIXED -->
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('category') }}">Categories</a></li>
+      <li><a href="{{ url_for('mars') }}">Mars</a></li>
+      <li><a href="{{ url_for('blackholes') }}" class="active">Black Holes</a></li>
+      <li><a href="{{ url_for('artemis') }}">Artemis</a></li>
+      <li><a href="{{ url_for('about') }}">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="article-hero">
+  <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80" alt="Deep space with stars" />
+  <div class="article-hero-overlay">
+    <p class="card-tag">Astrophysics · Theoretical Physics</p>
+    <h1>Inside a Black Hole: What Physics Tells Us</h1>
+    <div class="article-meta">
+      <span>By Prof. James Okafor</span>
+      <span>May 29, 2025</span>
+      <span>10 min read</span>
+    </div>
+  </div>
+</div>
+
+<article class="article-body">
+
+  <p>
+    Black holes are arguably the most philosophically disquieting objects in the universe. They are regions where spacetime itself breaks down — where our most powerful theories collide and, so far, produce only fire and paradox. Yet in 2025, our understanding of these cosmic abysses has never been richer, or stranger.
+  </p>
+
+  <blockquote>
+    "A black hole is not a hole in anything. It is the most extreme concentration of matter the laws of physics permit." — Kip Thorne, Nobel Laureate
+  </blockquote>
+
+  <h2>What Actually Defines a Black Hole</h2>
+  <p>
+    A black hole forms when mass is compressed into a region so dense that the escape velocity exceeds the speed of light. At that boundary — the <strong>event horizon</strong> — no signal, particle, or information can return to the outside universe. What lies within is, in the strictest sense, causally disconnected from us forever.
+  </p>
+  <p>
+    The singularity at the core is not a "point of infinite density" in any physical sense — it is the place where general relativity's equations break down entirely, signalling that a more complete theory is needed. This is where quantum gravity — the holy grail of theoretical physics — must live.
+  </p>
+
+  <img class="inline-img" src="https://images.unsplash.com/photo-1564053489984-317bbd824340?w=900&q=80" alt="Deep space telescope image" />
+
+  <h2>The Information Paradox — Still Unsolved</h2>
+  <p>
+    Stephen Hawking's 1974 discovery that black holes emit thermal radiation (now called Hawking radiation) introduced the most profound puzzle in physics: if a black hole evaporates completely, what happens to the information encoded in everything that fell in?
+  </p>
+  <p>
+    Quantum mechanics demands that information is never destroyed — it can be scrambled but must be recoverable in principle. General relativity says it is lost forever beyond the event horizon. Both cannot be right. This tension — the <em>black hole information paradox</em> — has driven decades of theoretical work.
+  </p>
+  <ul>
+    <li><strong>Hawking radiation</strong>: black holes slowly evaporate, emitting thermal photons</li>
+    <li><strong>Page curve</strong>: recent work suggests information does escape, encoded in radiation</li>
+    <li><strong>Island formula</strong>: a quantum gravity approach hinting at information recovery</li>
+    <li><strong>Firewall paradox</strong>: if information escapes, falling observers may hit a wall of energy</li>
+  </ul>
+
+  <h2>What the EHT Images Revealed</h2>
+  <p>
+    The Event Horizon Telescope's images of M87* (2019) and Sagittarius A* (2022) were not merely photographs — they were precision tests of general relativity at the most extreme scales imaginable. The shadow of each black hole matched Einstein's predictions to extraordinary accuracy, ruling out several competing theories of gravity.
+  </p>
+  <p>
+    The 2025 EHT data release added polarisation maps showing the magnetic field structure around Sgr A*, providing the first direct observational evidence for how jets of plasma are launched from the ergosphere — the region just outside the event horizon where spacetime itself rotates.
+  </p>
+
+  <blockquote>
+    "We're not just seeing a black hole. We're watching spacetime doing the most violent thing it knows how to do." — Dr. Avery Brooks, EHT Collaboration
+  </blockquote>
+
+  <h2>The Future: Next-Generation Telescopes</h2>
+  <p>
+    The next-generation Event Horizon Telescope (ngEHT) will add stations across the globe and in space, dramatically improving angular resolution. Scientists expect to produce the first <em>movies</em> of a black hole accretion disk — real-time visualisations of plasma swirling at relativistic speeds just before crossing the point of no return.
+  </p>
+  <p>
+    These observations, combined with gravitational wave detections of merging black holes from LIGO and its successors, may finally provide the empirical scaffolding needed to test quantum gravity theories — and bring us closer to understanding what, if anything, truly lies inside.
+  </p>
+
+</article>
+
+<section>
+  <div class="container">
+    <p class="section-label">✦ Related Articles</p>
+    <h2 class="section-title" style="margin-bottom:2rem;">Continue Exploring</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <img class="card-img" src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=600&q=80" alt="Mars" />
+        <div class="card-body">
+          <p class="card-tag">Planetary Science</p>
+          <h3 class="card-title">Life on Mars? New Rover Data Changes Everything</h3>
+          <!-- ✅ FIXED -->
+          <div class="card-footer"><span>Jun 12, 2025</span><a href="{{ url_for('mars') }}">Read more →</a></div>
+        </div>
+      </div>
+      <div class="card">
+        <img class="card-img" src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&q=80" alt="Moon" />
+        <div class="card-body">
+          <p class="card-tag">Human Spaceflight</p>
+          <h3 class="card-title">Artemis IV: The Mission That Will Change the Moon</h3>
+          <!-- ✅ FIXED -->
+          <div class="card-footer"><span>May 4, 2025</span><a href="{{ url_for('artemis') }}">Read more →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">✦ COSMOS CHRONICLE</div>
+  <ul class="footer-links">
+    <!-- ✅ FIXED -->
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('category') }}">Categories</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 Cosmos Chronicle. Built for the stars.</p>
+</footer>
+
+</body>
+</html>
