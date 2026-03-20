@@ -6,4 +6,7 @@ AIShield detects and prevents AI web scraping using behavioral analysis and mach
 ## Status
 ✔ Web app completed  
 ✔ Logging system completed  
-⬜ ML model (in progress)
+✔ Created two codes for human simulator & bot
+✔ Creates logs.csv , contains 1540 datas of bot & human
+✔ Create_dataset.py -> Creates the dataset using logs.csv
+✔ Model -> XGBClassifier (train.py), currently 94% accuracy
