@@ -4,23 +4,35 @@ import uuid
 from datetime import datetime
 from collections import defaultdict
 import os
+import json
+
+# 🔥 IMPORT MODULES
+from engine.fake_engine import smart_fake
+from engine.feature_extractor import extract_features
+from engine.detector import predict_bot
 
 app = Flask(__name__)
 
+# ---------------- PATHS ----------------
+LOGS_PATH = "data/logs.csv"
+BOT_LOGS_PATH = "data/bot_logs.csv"
+
 # ---------------- SESSION STORAGE ----------------
 user_sessions = defaultdict(list)
-detected_bots = set()
+detected_bots = {}
 
 # ---------------- CREATE LOG FILES ----------------
-if not os.path.exists("logs.csv"):
-    with open("logs.csv", "w", newline="") as f:
+os.makedirs("data", exist_ok=True)
+
+if not os.path.exists(LOGS_PATH):
+    with open(LOGS_PATH, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([
             "session_id", "page", "timestamp", "ip", "user_agent"
         ])
 
-if not os.path.exists("bot_logs.csv"):
-    with open("bot_logs.csv", "w", newline="") as f:
+if not os.path.exists(BOT_LOGS_PATH):
+    with open(BOT_LOGS_PATH, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([
             "session_id",
@@ -48,7 +60,7 @@ def create_response(template, session_id):
 
 # ---------------- BOT LOGGING ----------------
 def log_bot(session_id, ip, user_agent, pages, session_duration, avg_time, ppm):
-    with open("bot_logs.csv", "a", newline="") as f:
+    with open(BOT_LOGS_PATH, "a", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([
             session_id,
@@ -63,12 +75,12 @@ def log_bot(session_id, ip, user_agent, pages, session_duration, avg_time, ppm):
 
     print(f"🚨 BOT DETECTED: {session_id}")
 
-# ---------------- NORMAL LOGGING + DETECTION ----------------
+# ---------------- ML DETECTION ----------------
 def log_request(session_id, page):
     timestamp = datetime.now()
 
     # Save logs
-    with open("logs.csv", "a", newline="") as f:
+    with open(LOGS_PATH, "a", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([
             session_id,
@@ -79,44 +91,77 @@ def log_request(session_id, page):
         ])
 
     # Track session
-    user_sessions[session_id].append(timestamp)
+    user_sessions[session_id].append((timestamp, page))
 
-    times = user_sessions[session_id]
-    pages = len(times)
+    # Extract features
+    features = extract_features(user_sessions[session_id])
 
-    if pages > 1:
-        time_diff = (times[-1] - times[0]).total_seconds()
-        time_diff = max(time_diff, 0.1)
+    if not features:
+        return
 
+    prediction = predict_bot(features)
+
+    print("FEATURES:", features)
+    print("PREDICTION:", prediction)
+
+    last_flag_time = detected_bots.get(session_id)
+
+    # Stable detection
+    if prediction == 1 and (
+        session_id not in detected_bots or
+        (last_flag_time and (datetime.now() - last_flag_time).seconds > 30)
+    ):
+        detected_bots[session_id] = datetime.now()
+
+        session_data = user_sessions[session_id]
+        times = [t[0] for t in session_data]
+        pages = len(times)
+
+        time_diff = max((times[-1] - times[0]).total_seconds(), 0.1)
         avg_time = time_diff / (pages - 1)
-        pages_per_min = pages / (time_diff / 60)
+        ppm = pages / (time_diff / 60)
 
-        intervals = [
-            (times[i] - times[i - 1]).total_seconds()
-            for i in range(1, len(times))
-        ]
+        log_bot(
+            session_id,
+            request.remote_addr,
+            request.headers.get("User-Agent"),
+            pages,
+            time_diff,
+            avg_time,
+            ppm
+        )
 
-        mean_interval = sum(intervals) / len(intervals) if intervals else 0
+# ---------------- MIDDLEWARE ----------------
+@app.after_request
+def modify_response(response):
+    try:
+        session_id = request.cookies.get("session_id")
 
-        ua = str(request.headers.get("User-Agent")).lower()
+        if not session_id:
+            return response
 
-        # ---------------- BOT DETECTION ----------------
-        if session_id not in detected_bots and (
-            (pages_per_min > 100 and avg_time < 1.0) or
-            (len(intervals) > 3 and mean_interval < 0.5) or
-            ("bot" in ua)
-        ):
-            detected_bots.add(session_id)
+        if response.content_type.startswith("text/html"):
 
-            log_bot(
-                session_id,
-                request.remote_addr,
-                request.headers.get("User-Agent"),
-                pages,
-                time_diff,
-                avg_time,
-                pages_per_min
-            )
+            if session_id in detected_bots:
+
+                bot_time = detected_bots[session_id]
+                time_diff = (datetime.now() - bot_time).total_seconds()
+
+                if time_diff < 30:
+                    print("FAKE CONTENT APPLIED")
+                    content = response.get_data(as_text=True)
+
+                    # 🔥 Apply fake transformation
+                    content = smart_fake(content)
+
+                    response.set_data(content)
+                else:
+                    detected_bots.pop(session_id, None)
+
+    except Exception as e:
+        print("Middleware Error:", e)
+
+    return response
 
 # ---------------- ROUTES ----------------
 @app.route("/")
@@ -125,13 +170,11 @@ def home():
     log_request(session_id, "home")
     return create_response("index.html", session_id)
 
-
 @app.route("/about")
 def about():
     session_id = get_session_id()
     log_request(session_id, "about")
     return create_response("about/index.html", session_id)
-
 
 @app.route("/mars")
 def mars():
@@ -139,13 +182,11 @@ def mars():
     log_request(session_id, "mars")
     return create_response("articles/mars.html", session_id)
 
-
 @app.route("/blackholes")
 def blackholes():
     session_id = get_session_id()
     log_request(session_id, "blackholes")
     return create_response("articles/blackholes.html", session_id)
-
 
 @app.route("/artemis")
 def artemis():
@@ -153,13 +194,37 @@ def artemis():
     log_request(session_id, "artemis")
     return create_response("articles/artemis.html", session_id)
 
-
 @app.route("/category")
 def category():
     session_id = get_session_id()
     log_request(session_id, "category")
     return create_response("category/index.html", session_id)
 
+@app.route("/admin", methods=["GET", "POST"])
+def admin():
+    rules_path = "config/rules.json"
+
+    # Load existing rules
+    with open(rules_path, "r") as f:
+        rules = json.load(f)
+
+    if request.method == "POST":
+        word = request.form.get("word").lower()
+        replacement = request.form.get("replacement")
+
+        # Add / Update rule
+        rules[word] = replacement
+
+        with open(rules_path, "w") as f:
+            json.dump(rules, f, indent=4)
+
+    return render_template("admin.html", rules=rules)
+
+# ---------------- HONEYPOT ----------------
+@app.route("/admin-secret")
+def trap():
+    print("🚨 BOT TRAPPED:", request.remote_addr)
+    return "Access Logged"
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":

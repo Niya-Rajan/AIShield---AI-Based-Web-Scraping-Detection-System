@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIShield — Control Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #080c10;
+            --surface:   #0d1117;
+            --border:    #1c2430;
+            --accent:    #00d4ff;
+            --accent2:   #0077ff;
+            --danger:    #ff3b5c;
+            --text:      #e2eaf4;
+            --muted:     #4a5a70;
+            --success:   #00e5a0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* — grid lines backdrop — */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* — glow orb — */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px; right: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0,119,255,.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shell {
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ——— HEADER ——— */
+        header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 56px;
+            animation: fadeDown .5s ease both;
+        }
+
+        .logo-mark {
+            width: 40px; height: 40px;
+            border: 1.5px solid var(--accent);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 0 18px rgba(0,212,255,.25);
+            flex-shrink: 0;
+        }
+
+        .logo-mark svg { display: block; }
+
+        .header-text h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.35rem;
+            letter-spacing: .02em;
+            color: #fff;
+        }
+
+        .header-text p {
+            font-size: .72rem;
+            color: var(--muted);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .status-pill {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(0,229,160,.07);
+            border: 1px solid rgba(0,229,160,.2);
+            border-radius: 999px;
+            padding: 5px 14px;
+            font-size: .7rem;
+            color: var(--success);
+            letter-spacing: .08em;
+        }
+
+        .status-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s ease infinite;
+        }
+
+        /* ——— SECTION LABEL ——— */
+        .section-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ——— CARD ——— */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 32px;
+            animation: fadeUp .5s ease both;
+        }
+
+        .card:nth-child(3) { animation-delay: .08s; }
+        .card:nth-child(4) { animation-delay: .16s; }
+
+        /* ——— FORM ——— */
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 6px; }
+
+        label {
+            font-size: .68rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        input[type="text"] {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: .85rem;
+            padding: 10px 14px;
+            width: 100%;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 3px rgba(0,119,255,.12);
+        }
+
+        input::placeholder { color: var(--muted); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent2);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            font-family: 'DM Mono', monospace;
+            font-size: .8rem;
+            font-weight: 500;
+            letter-spacing: .06em;
+            padding: 11px 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .2s, transform .15s, box-shadow .2s;
+        }
+
+        .btn:hover {
+            background: #005fcc;
+            box-shadow: 0 4px 18px rgba(0,119,255,.35);
+            transform: translateY(-1px);
+        }
+
+        .btn:active { transform: translateY(0); }
+
+        /* ——— RULES TABLE ——— */
+        .rules-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .rule-count {
+            background: rgba(0,212,255,.08);
+            border: 1px solid rgba(0,212,255,.15);
+            border-radius: 999px;
+            font-size: .68rem;
+            padding: 3px 12px;
+            color: var(--accent);
+            letter-spacing: .08em;
+        }
+
+        .rules-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: border-color .2s;
+            animation: fadeUp .35s ease both;
+        }
+
+        .rule-item:hover { border-color: #2a3a50; }
+
+        .rule-key, .rule-val {
+            padding: 11px 16px;
+            font-size: .82rem;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rule-key { color: var(--accent); }
+
+        .rule-arrow {
+            color: var(--muted);
+            font-size: .8rem;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+
+        .rule-val { color: var(--danger); }
+
+        .rule-index {
+            width: 36px;
+            text-align: center;
+            font-size: .65rem;
+            color: var(--muted);
+            border-right: 1px solid var(--border);
+            padding: 11px 0;
+            flex-shrink: 0;
+        }
+
+        .rule-delete {
+            width: 38px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
+            display: grid;
+            place-items: center;
+            border-left: 1px solid var(--border);
+            height: 100%;
+            padding: 11px 0;
+            transition: color .2s, background .2s;
+        }
+
+        .rule-delete:hover { color: var(--danger); background: rgba(255,59,92,.06); }
+
+        .empty-state {
+            text-align: center;
+            padding: 36px 0;
+            color: var(--muted);
+            font-size: .78rem;
+            letter-spacing: .06em;
+        }
+
+        .empty-state span { display: block; font-size: 1.6rem; margin-bottom: 10px; opacity: .3; }
+
+        /* ——— ANIMATIONS ——— */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: .3; }
+        }
+
+        /* ——— RESPONSIVE ——— */
+        @media (max-width: 560px) {
+            .input-row { grid-template-columns: 1fr; }
+            .btn { width: 100%; justify-content: center; }
+            .status-pill { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="shell">
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2L17 6V14L10 18L3 14V6L10 2Z" stroke="#00d4ff" stroke-width="1.4" stroke-linejoin="round"/>
+                <circle cx="10" cy="10" r="2.5" fill="#00d4ff" opacity=".8"/>
+            </svg>
+        </div>
+        <div class="header-text">
+            <h1>AIShield</h1>
+            <p>Control Panel · Substitution Rules</p>
+        </div>
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            ACTIVE
+        </div>
+    </header>
+
+    <!-- ADD RULE -->
+    <p class="section-label">Add Rule</p>
+    <div class="card">
+        <form method="POST">
+            <div class="input-row">
+                <div class="field">
+                    <label for="word">Original Word</label>
+                    <input type="text" id="word" name="word" placeholder="e.g. password" required>
+                </div>
+                <div class="field">
+                    <label for="replacement">Substitution Value</label>
+                    <input type="text" id="replacement" name="replacement" placeholder="e.g. ••••••••" required>
+                </div>
+                <button class="btn" type="submit">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    Add Rule
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ACTIVE RULES -->
+    <div class="rules-header">
+        <p class="section-label" style="margin:0; flex:1;">Active Rules</p>
+        <span class="rule-count" id="ruleCount">0 rules</span>
+    </div>
+    <div class="card" style="padding: 20px;">
+        <ul class="rules-list" id="rulesList">
+
+            <!-- Jinja template block — active when served from Flask -->
+            {% for key, value in rules.items() %}
+            <li class="rule-item">
+                <span class="rule-index">{{ loop.index }}</span>
+                <span class="rule-key">{{ key }}</span>
+                <span class="rule-arrow">→</span>
+                <span class="rule-val">{{ value }}</span>
+                <button class="rule-delete" title="Remove rule" onclick="this.closest('li').remove(); updateCount();">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+            </li>
+            {% else %}
+            <li class="empty-state" id="emptyState">
+                <span>⚙</span>No substitution rules defined yet.
+            </li>
+            {% endfor %}
+
+            <!-- Static demo rules (visible in plain HTML preview) -->
+            <li class="rule-item" id="demo1">
+                <span class="rule-index">1</span>
+                <span class="rule-key">api_key</span>
+                <span class="rule-arrow">→</span>
+                <span class="rule-val">sk-••••••••••••</span>
+                <button class="rule-delete" title="Remove rule" onclick="this.closest('li').remove(); updateCount();">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+            </li>
+            <li class="rule-item" id="demo2">
+                <span class="rule-index">2</span>
+                <span class="rule-key">email</span>
+                <span class="rule-arrow">→</span>
+                <span class="rule-val">user@redacted.com</span>
+                <button class="rule-delete" title="Remove rule" onclick="this.closest('li').remove(); updateCount();">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+            </li>
+
+        </ul>
+    </div>
+
+</div>
+
+<script>
+    function updateCount() {
+        const items = document.querySelectorAll('.rule-item');
+        const count = items.length;
+        document.getElementById('ruleCount').textContent = count + (count === 1 ? ' rule' : ' rules');
+
+        // Re-index
+        items.forEach((item, i) => {
+            const idx = item.querySelector('.rule-index');
+            if (idx) idx.textContent = i + 1;
+        });
+
+        // Show empty state if 0
+        const list = document.getElementById('rulesList');
+        let empty = document.getElementById('emptyState');
+        if (count === 0 && !empty) {
+            const li = document.createElement('li');
+            li.id = 'emptyState';
+            li.className = 'empty-state';
+            li.innerHTML = '<span>⚙</span>No substitution rules defined yet.';
+            list.appendChild(li);
+        }
+    }
+
+    updateCount();
+</script>
+</body>
+</html>
