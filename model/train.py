@@ -1,13 +1,12 @@
 import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 import joblib
 
-# Load dataset
-df = pd.read_csv("dataset.csv")
-
-# Features
+# ---------------- LOAD DATASET ----------------
+df = pd.read_csv("data/dataset.csv")
+# ---------------- FEATURES ----------------
 X = df[[
     "pages_visited",
     "session_duration",
@@ -15,15 +14,21 @@ X = df[[
     "pages_per_min"
 ]]
 
-# Labels
+# ---------------- LABELS ----------------
 y = df["label"]
+
+print("Label Distribution:")
 print(df["label"].value_counts())
-# Split data (IMPORTANT: added random_state + stratify)
+
+# ---------------- TRAIN-TEST SPLIT ----------------
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
 )
 
-# Train model (improved version)
+# ---------------- MODEL TRAINING ----------------
 model = XGBClassifier(
     n_estimators=200,
     learning_rate=0.1,
@@ -35,14 +40,16 @@ model = XGBClassifier(
 
 model.fit(X_train, y_train)
 
-# Predictions
+# ---------------- PREDICTION ----------------
 y_pred = model.predict(X_test)
 
-# Accuracy
+# ---------------- EVALUATION ----------------
 acc = accuracy_score(y_test, y_pred)
-print("Model Accuracy:", acc)
+print("\nModel Accuracy:", acc)
 
-# Save model
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# ---------------- SAVE MODEL ----------------
 joblib.dump(model, "model.pkl")
-
-print("Model saved as model.pkl")
+print("\nModel saved as model.pkl")
