@@ -57,11 +57,7 @@ Unlike traditional approaches such as CAPTCHA or IP blocking, AIShield focuses o
 - Session duration  
 - Average time per page  
 - Pages per minute (derived feature)
-
----
-
-
-
+  
 ---
 
 ## 🛠️ Tech Stack
@@ -74,10 +70,6 @@ Unlike traditional approaches such as CAPTCHA or IP blocking, AIShield focuses o
 
 ---
 
----
-
----
-
 ## 💡 Why AIShield?
 
 AIShield introduces a **proactive security approach**:
@@ -85,9 +77,6 @@ AIShield introduces a **proactive security approach**:
 > Instead of blocking bots, it **misleads them**.
 
 This makes it more effective against modern AI-driven scrapers while preserving user experience.
-
----
-
 
 ---
 
